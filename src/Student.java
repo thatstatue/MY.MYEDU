@@ -4,6 +4,7 @@ import java.util.Map;
 public class Student extends User{
     public Student(String username, String password) {
         super(username, password);
+        registeredCourses = new ArrayList<>();
     }
     private ArrayList<Map<School , Course>> registeredCourses;
 
@@ -22,10 +23,16 @@ public class Student extends User{
     public void removeRegisteredCourse(School school, Course course) {
         registeredCourses.remove(Map.of(school, course));
     }
-    public void status(){
+    public void status() throws NullPointerException{
         System.out.println("list of registered courses\n=============");
-        for (Map<School,Course> courseMap : registeredCourses){
-            System.out.println("course name: "+ courseMap);
+        int i = 1;
+        try {
+            for (Map<School, Course> courseMap : registeredCourses) {
+                System.out.println(i + "- course name: " + courseMap);
+                i++;
+            }
+        }catch (NullPointerException ex){
+            System.out.println("you have no registered courses.");
         }
         System.out.println("==============");
     }

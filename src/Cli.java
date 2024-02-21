@@ -13,6 +13,7 @@ public class Cli {
     }
 
     public void init() {
+        //todo: only if command decided
         while (true) {
             System.out.println("1- login\n2- create account");
             String input = scanner.next();
@@ -31,6 +32,7 @@ public class Cli {
                         if (user.getUsername().equals(username) &&
                                 user.getPassword().equals(password)) {
                             //login
+                            overview(user);
                             exists = true;
                         }
                     }
@@ -43,6 +45,50 @@ public class Cli {
                     database.addUser(newUser);
                 }
 
+            }
+        }
+    }
+    public void overview(User user){
+        System.out.println("you are logged in!");
+        if (user instanceof Admin){
+            adminOverview((Admin) user);
+        }else {
+            studentOverview((Student) user);
+        }
+    }
+    public void adminOverview(Admin admin){
+        //todo: view all courses
+
+    }
+    public void studentOverview(Student student){
+        System.out.println("1- show registered courses\n2- show all courses");
+        String input = scanner.next();
+        if (input.equals("back")) {
+            init();
+        } else {
+            if (input.equals("1")) {
+                student.status();
+                System.out.println("\n1-add course\n2- remove course");
+                input = scanner.next();
+                if (input.equals("back")) {
+                    init();
+                } else {
+                    System.out.println("please provide school: ");
+                    School sch = School.valueOf(scanner.next());
+                    System.out.println("please provide course name: ");
+                    String courseName = scanner.next();
+                    Course course = new Course(courseName, 1);
+                    if (input.equals("1")) {
+                        student.addRegisteredCourse(sch, course);
+                    }else if (input.equals("2")){
+                        student.removeRegisteredCourse(sch, course);
+                        //todo: remove doesn't work
+                    }
+                }
+
+            }else if (input.equals("2")){
+                System.out.println("to be completed");
+                //todo: complete this
             }
         }
     }

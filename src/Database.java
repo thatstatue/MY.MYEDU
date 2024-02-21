@@ -5,7 +5,7 @@ public class Database {
     private final ArrayList<User> users;
 
     public Database() {
-        this(null);
+        this(new ArrayList<>());
     }
     public Database(ArrayList<User> users){
         this.users = users;

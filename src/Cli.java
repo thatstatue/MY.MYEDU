@@ -11,8 +11,18 @@ public class Cli {
         this.logic = logic;
         database = new Database();
     }
+    public void run(){
+        loginPage();
 
-    public void init() {
+    }
+    public void redirectLogin(String input){
+        if (input.equals("0")){
+            loginPage();
+        }
+    }
+
+
+    public void loginPage() {
         //todo: only if command decided
         while (true) {
             System.out.println("1- login\n2- create account");
@@ -24,9 +34,7 @@ public class Cli {
                 String username = scanner.next();
                 System.out.println("provide password:");
                 String password = scanner.next();
-
                 if (input.equals("1")) {
-
                     boolean exists = false;
                     for (User user : database.getUsers()) {
                         if (user.getUsername().equals(username) &&
@@ -48,6 +56,8 @@ public class Cli {
             }
         }
     }
+
+
     public void overview(User user){
         System.out.println("you are logged in!");
         if (user instanceof Admin){
@@ -61,17 +71,21 @@ public class Cli {
 
     }
     public void studentOverview(Student student){
+
+        System.out.println("0- go to login page");
         System.out.println("1- show registered courses\n2- show all courses");
         String input = scanner.next();
+        redirectLogin(input);
+
         if (input.equals("back")) {
-            init();
+            //init(); todo: arraylist of actions
         } else {
             if (input.equals("1")) {
                 student.status();
                 System.out.println("\n1-add course\n2- remove course");
                 input = scanner.next();
                 if (input.equals("back")) {
-                    init();
+                    //init(); todo: arraylist of actions
                 } else {
                     System.out.println("please provide school: ");
                     School sch = School.valueOf(scanner.next());

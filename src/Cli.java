@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Cli {
@@ -5,11 +6,32 @@ public class Cli {
     private final Logic logic;
 
     private Database database;
+    private ArrayList<String> actions;
+    private User thisUser;
+
+    private void addAction(String action){
+        actions.add(action);
+    }
+    private void backAction() throws NullPointerException{
+        try {
+            String action = actions.getLast();
+            actions.removeLast();
+            if (action.equals("overview")) {
+                overview(thisUser);
+            } else if (action.equals("login")) {
+                redirectLogin("0");
+            }
+
+        }catch (NullPointerException ex) {
+            System.out.println("no tracked history");
+        }
+    }
 
 
     public Cli(Logic logic) {
         this.logic = logic;
         database = new Database();
+        actions = new ArrayList<>();
     }
     public void run(){
         loginPage();
@@ -21,38 +43,42 @@ public class Cli {
         }
     }
 
+    public User getThisUser() {
+        return thisUser;
+    }
+
+    public void setThisUser(User thisUser) {
+        this.thisUser = thisUser;
+    }
 
     public void loginPage() {
-        //todo: only if command decided
-        while (true) {
-            System.out.println("1- login\n2- create account");
-            String input = scanner.next();
-            if (input.equals("back")) {
-                break;
-            } else {
-                System.out.println("provide username:");
-                String username = scanner.next();
-                System.out.println("provide password:");
-                String password = scanner.next();
-                if (input.equals("1")) {
-                    boolean exists = false;
-                    for (User user : database.getUsers()) {
-                        if (user.getUsername().equals(username) &&
-                                user.getPassword().equals(password)) {
-                            //login
-                            overview(user);
-                            exists = true;
-                        }
+        System.out.println("1- login\n2- create account");
+        String input = scanner.next();
+        if (input.equals("back")) {
+            backAction();
+        } else {
+            System.out.println("provide username:");
+            String username = scanner.next();
+            System.out.println("provide password:");
+            String password = scanner.next();
+            if (input.equals("1")) {
+                boolean exists = false;
+                for (User user : database.getUsers()) {
+                    if (user.getUsername().equals(username) &&
+                            user.getPassword().equals(password)) {
+                        //login
+                        setThisUser(user);
+                        overview(thisUser);
+                        exists = true;
                     }
-                    if (!exists){
-                        System.out.println("wrong username or password!");
-                    }
-
-                } else if (input.equals("2")) {
-                    User newUser = logic.createUser(username, password);
-                    database.addUser(newUser);
+                }
+                if (!exists) {
+                    System.out.println("wrong username or password!");
                 }
 
+            } else if (input.equals("2")) {
+                User newUser = logic.createUser(username, password);
+                database.addUser(newUser);
             }
         }
     }

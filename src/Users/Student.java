@@ -1,6 +1,11 @@
+package Users;
+
+import Courses.Course;
+import Courses.Police;
+
 import java.util.ArrayList;
 
-public class Student extends User{
+public class Student extends User {
     private int units;
     private boolean[][] weekSchedule;
     //todo: when u add a course , times should be put to true

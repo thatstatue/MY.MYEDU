@@ -1,3 +1,5 @@
+import Users.*;
+
 public class Logic {
 
     public User createUser(String username, String password){

@@ -1,3 +1,6 @@
+package Courses;
+import Users.Student;
+
 public class Police {
     public static boolean isValid(Student student, Course course){
         if (student.getUnits() + course.getUnits() > 20){

@@ -1,3 +1,6 @@
+import Courses.*;
+import Users.*;
+
 import java.util.ArrayList;
 
 public class Database {

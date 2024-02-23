@@ -1,3 +1,7 @@
+package Courses;
+
+import Users.Student;
+
 import java.util.ArrayList;
 
 public abstract class Course {
@@ -48,8 +52,8 @@ public abstract class Course {
         for (int num: days){
             d += dayNumbers[num] + " ";
         }
-        d += "{from: " + startHours[getHours()[0]] +
-                "to: "+ startHours[getHours()[getHours().length-1] + 1] + "}";
+        d += "{from " + startHours[getHours()[0]] +
+                " to "+ startHours[getHours()[getHours().length-1] + 1] + "}\n";
         return s+ d;
     }
 

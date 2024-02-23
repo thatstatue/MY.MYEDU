@@ -18,13 +18,15 @@ public class Student extends User{
 
     public void addRegisteredCourse(School school, Course course){
         registeredCourses.add(Map.of(school , course));
+        System.out.println("course was registered successfully.");
 
     }
     public void removeRegisteredCourse(School school, Course course) {
         registeredCourses.remove(Map.of(school, course));
+        System.out.println("course was removed successfully.");
     }
     public void status() throws NullPointerException{
-        System.out.println("list of registered courses\n=============");
+        System.out.println("list of registered courses\n==============");
         int i = 1;
         try {
             for (Map<School, Course> courseMap : registeredCourses) {

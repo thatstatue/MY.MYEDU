@@ -1,4 +1,4 @@
-public class Course {
+public abstract class Course {
     private final String name;
     private final int group;
 

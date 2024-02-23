@@ -13,6 +13,16 @@ public class Cli {
     public void initHardcore(){
         Admin admin = new Admin("Admin", "nottheAPpass");
         database.addUser(admin);
+        Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{8 , 9, 10, 11}, 1, new ArrayList<>(), 100);
+        Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{4 , 5, 6, 7}, 1, new ArrayList<>(), 100);
+        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{4 , 5, 6, 7}, 2, new ArrayList<>(), 200);
+        Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{4 , 5, 6}, 1, new ArrayList<>(), 80);
+        database.addCourse(AP);
+        database.addCourse(SetTheory);
+        database.addCourse(Math1);
+        database.addCourse(Discrete);
+        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{1 , 2, 3, 4}, 1, new ArrayList<>(), 100);
+        database.addCourse(LogicGate);
     }
 
     private void addAction(String action){
@@ -45,6 +55,7 @@ public class Cli {
         this.logic = logic;
         database = new Database();
         actions = new ArrayList<>();
+        initHardcore();
     }
     public void run(){
         loginPage();
@@ -116,6 +127,7 @@ public class Cli {
         //todo: view all courses
 
     }
+
     private void studentOverview(Student student) throws IllegalArgumentException{
 
         System.out.println("0- go to login page");
@@ -135,35 +147,55 @@ public class Cli {
                     backAction();
                 } else {
                     //addAction("overview");
-                    try {
-                        System.out.println("please provide school: ");
-                        School sch = School.valueOf(scanner.next());
-                        System.out.println("please provide course name: ");
-                        String courseName = scanner.next();
-//                        if (courseName.charAt(0)== '1') {
-//                            Course course = new Course(courseName, 1);
-//                        }else{
-//                            Course course = new Course(courseName, 1)
-//                        }
-//                        if (input.equals("1")) {
-//                            student.addRegisteredCourse(sch, course);
-//                        } else if (input.equals("2")) {
-//                            student.removeRegisteredCourse(sch, course);
-//                            //todo: remove doesn't work
-//                        }
-                    }catch (IllegalArgumentException e){
-                        System.out.println("there is no such course in the school you provided!");
+                    System.out.println("please provide course code: ");
+                    int code = scanner.nextInt();
+                    boolean exists = false;
+                    Course courseCode = null;
+                    for (Course course : database.getCourses()) {
+                        if (course.getCode() == code) {
+                            courseCode = course;
+                            exists = true;
+                            break;
+                        }
                     }
-                    backAction();
+                    if (!exists) {
+                        System.out.println("no such course found.");
+                    } else {
+                        if (input.equals("1")) {
+                            boolean canAdd = true;
+                            for (Course course : student.getRegisteredCourses()) {
+                                if (course.getCode() == code) {
+                                    System.out.println("you have already registered in this course.");
+                                    canAdd = false;
+                                    break;
+                                }
+                            }
+                            if (canAdd) {
+                                student.addRegisteredCourse(courseCode);
+                            }
+                        } else if (input.equals("2")) {
+                            boolean canRemove = true;
+                            for (Course course : student.getRegisteredCourses()) {
+                                if (course.getCode() == code) {
+                                    student.removeRegisteredCourse(courseCode);
+                                    canRemove = false;
+                                    break;
+                                }
+                            }
+                            if (!canRemove) {
+                                System.out.println("you didn't have this course.");
+                            }
+                        }
+                        backAction();
+                    }
+                    //todo: remove doesn't work
                 }
-
             }else if (input.equals("2")){
                 System.out.println("to be completed");
                 //todo: complete this
                 backAction();
             }
         }
-//        backAction();
     }
 
     public Logic getLogic() {

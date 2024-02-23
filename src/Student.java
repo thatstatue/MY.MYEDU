@@ -1,36 +1,53 @@
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Student extends User{
+    private int units;
+    private boolean[][] weekSchedule;
+    //todo: when u add a course , times should be put to true
+
+    public int getUnits() {
+        return units;
+    }
+
+    public void setUnits(int units) {
+        this.units = units;
+    }
+
     public Student(String username, String password) {
         super(username, password);
         registeredCourses = new ArrayList<>();
+        weekSchedule = new boolean[6][26];
     }
-    private ArrayList<Map<School , Course>> registeredCourses;
+    private ArrayList<Course> registeredCourses;
 
-    public ArrayList<Map<School, Course>> getRegisteredCourses() {
+    public ArrayList<Course> getRegisteredCourses() {
         return registeredCourses;
     }
 
-    public void setRegisteredCourses(ArrayList<Map<School, Course>> registedCourses) {
+    public void setRegisteredCourses(ArrayList<Course> registedCourses) {
         this.registeredCourses = registedCourses;
     }
 
-    public void addRegisteredCourse(School school, Course course){
-        registeredCourses.add(Map.of(school , course));
-        System.out.println("course was registered successfully.");
+    public void addRegisteredCourse(Course course){
+        //todo: Police
+        if(Police.isValid(this, course)) {
+            registeredCourses.add(course);
+            System.out.println("course was registered successfully.");
+        }else{
+            System.out.println("course was not registered.");
+        }
 
     }
-    public void removeRegisteredCourse(School school, Course course) {
-        registeredCourses.remove(Map.of(school, course));
+    public void removeRegisteredCourse( Course course) {
+        registeredCourses.remove(course);
         System.out.println("course was removed successfully.");
     }
     public void status() throws NullPointerException{
         System.out.println("list of registered courses\n==============");
         int i = 1;
         try {
-            for (Map<School, Course> courseMap : registeredCourses) {
-                System.out.println(i + "- course name: " + courseMap);
+            for ( Course course : registeredCourses) {
+                System.out.println(i + ". " + course.display());
                 i++;
             }
         }catch (NullPointerException ex){
@@ -38,5 +55,4 @@ public class Student extends User{
         }
         System.out.println("==============");
     }
-
 }

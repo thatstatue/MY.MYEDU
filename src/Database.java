@@ -44,10 +44,18 @@ public class Database {
 
     public void showCourses(School school){
         System.out.println("Courses of "+ school.name() + ": ");
+        int i = 1;
         for (Course course : courses){
             if (course.getSchool().equals(school)) {
-                System.out.println(course);
+                System.out.println(i + "- " + course.display());
+                i++;
             }
+        }
+    }
+
+    public void showSchools(){
+        for (int i = 1; i<=6; i++){
+            System.out.println(i + "- " +School.values()[i-1]);
         }
     }
 }

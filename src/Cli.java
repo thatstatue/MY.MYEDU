@@ -36,7 +36,10 @@ public class Cli {
         switch (action) {
             case "overview" -> overview(thisUser);
             case "login" -> redirectLogin("0");
-            case "show registered courses" -> showRegCourses((Student) (thisUser));
+            case "show registered courses" -> {
+                ((Student)(thisUser)).status();
+                changeInCourses((Student) (thisUser));
+            }
         }
     }
     private void backAction() {
@@ -124,6 +127,7 @@ public class Cli {
     public void overview(User user){
         addAction("overview");
         System.out.println("you are logged in!");
+        System.out.println("0- go to login page");
         if (user instanceof Admin){
             adminOverview((Admin) user);
         }else {
@@ -132,10 +136,9 @@ public class Cli {
     }
     private void adminOverview(Admin admin){
         //todo: view all courses
-
     }
-    private void showRegCourses(Student student){
-        student.status();
+
+    private void changeInCourses(Student student){
         System.out.println("\n1- add course\n2- remove course");
         String input = scanner.next();
         if (input.equals("back")) {
@@ -189,9 +192,7 @@ public class Cli {
         }
     }
 
-    private void studentOverview(Student student) throws IllegalArgumentException{
-
-        System.out.println("0- go to login page");
+    private void studentOverview(Student student){
         System.out.println("1- show registered courses\n2- show all courses for schools");
         String input = scanner.next();
         redirectLogin(input);
@@ -200,17 +201,36 @@ public class Cli {
         } else {
             if (input.equals("1")) {
                 addAction("show registered courses");
-                showRegCourses(student);
+                student.status();
+                changeInCourses(student);
             }else if (input.equals("2")){
                 addAction("show all courses");
                 showAllCourses(student);
+                changeInCourses(student);
             }
             backAction();
         }
     }
 
     private void showAllCourses(Student student){
-        System.out.println("please provide course school name: ");
+        database.showSchools();
+        System.out.println("please choose a school: ");
+        String input = scanner.next();
+        redirectLogin(input);
+        if (input.equals("back")){
+            backAction();
+        }else{
+            try {
+                School schoolCode = School.values()[Integer.parseInt(input)-1];
+                database.showCourses(schoolCode);
+                System.out.println();
+
+            }catch (ArrayIndexOutOfBoundsException ex){
+                System.out.println("invalid number!");
+                thisAction();
+            }
+        }
+
 
         //todo: complete this
     }

@@ -1,6 +1,12 @@
 import Users.*;
 
 public class Logic {
+    public final Database database;
+
+    public Logic(Database database) {
+        this.database = database;
+    }
+
 
     public User createUser(String username, String password){
         User newUser;

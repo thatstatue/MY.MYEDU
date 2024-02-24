@@ -7,24 +7,22 @@ import java.util.Scanner;
 public class Cli {
     public final Scanner scanner = new Scanner(System.in);
     private final Logic logic;
-
-    private final Database database;
     private final ArrayList<String> actions;
     private User thisUser;
 
     public void initHardcore(){
         Admin admin = new Admin("Admin", "nottheAPpass");
-        database.addUser(admin);
+        logic.database.addUser(admin);
         Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11 , 12, 13, 14}, 1, new ArrayList<>(), 100);
         Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6 , 7, 8, 9}, 1, new ArrayList<>(), 100);
         General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6 , 7, 8, 9}, 2, new ArrayList<>(), 200);
         Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6 , 7, 8}, 1, new ArrayList<>(), 80);
-        database.addCourse(AP);
-        database.addCourse(SetTheory);
-        database.addCourse(Math1);
-        database.addCourse(Discrete);
+        logic.database.addCourse(AP);
+        logic.database.addCourse(SetTheory);
+        logic.database.addCourse(Math1);
+        logic.database.addCourse(Discrete);
         Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0 , 1, 2, 3}, 1, new ArrayList<>(), 100);
-        database.addCourse(LogicGate);
+        logic.database.addCourse(LogicGate);
     }
 
     private void addAction(String action){
@@ -37,8 +35,21 @@ public class Cli {
             case "overview" -> overview(thisUser);
             case "login" -> redirectLogin("0");
             case "show registered courses" -> {
-                ((Student)(thisUser)).status();
-                changeInCourses((Student) (thisUser));
+                if (thisUser instanceof Student){
+                    ((Student)(thisUser)).status();
+                    changeInCourses((Student) (thisUser));
+                }else{
+                    //todo: complete for admin
+                }
+
+            }
+            case "show all courses" -> {
+                if (thisUser instanceof Student) {
+                    showAllCourses((Student) (thisUser));
+                    changeInCourses((Student) (thisUser));
+                }else{
+                    //todo: complete for admin
+                }
             }
         }
     }
@@ -46,11 +57,13 @@ public class Cli {
         if (actions.size()>1){
             actions.removeLast();
             String action = actions.getLast();
+            // /*
             System.out.println("\n----");
             for (String a : actions) {
                 System.out.println(a);
             }
             System.out.println("----\n");
+            // */
             acting(action);
         }
     }
@@ -63,7 +76,6 @@ public class Cli {
 
     public Cli(Logic logic) {
         this.logic = logic;
-        database = new Database();
         actions = new ArrayList<>();
         initHardcore();
     }
@@ -97,7 +109,7 @@ public class Cli {
             String password = scanner.next();
             if (input.equals("1")) {
                 boolean exists = false;
-                for (User user : database.getUsers()) {
+                for (User user : logic.database.getUsers()) {
                     if (user.getUsername().equals(username) &&
                             user.getPassword().equals(password)) {
                         //login
@@ -113,13 +125,12 @@ public class Cli {
 
             } else {
                 User newUser = logic.createUser(username, password);
-                database.addUser(newUser);
+                logic.database.addUser(newUser);
                 System.out.println("your account was created!");
                 redirectLogin("0");
             }
         }else {
-            System.out.println("invalid command");
-            redirectLogin("0");
+            invalidInput();
         }
     }
 
@@ -149,7 +160,7 @@ public class Cli {
             int code = scanner.nextInt();
             boolean exists = false;
             Course courseCode = null;
-            for (Course course : database.getCourses()) {
+            for (Course course : logic.database.getCourses()) {
                 if (course.getCode() == code) {
                     courseCode = course;
                     exists = true;
@@ -188,6 +199,7 @@ public class Cli {
                         thisAction();
                     }
                 }
+                thisAction();
             }
         }
     }
@@ -207,13 +219,21 @@ public class Cli {
                 addAction("show all courses");
                 showAllCourses(student);
                 changeInCourses(student);
+            }else{
+                invalidInput();
             }
-            backAction();
+            thisAction();
+            //backAction();
         }
     }
 
+    private void invalidInput(){
+        System.out.println("invalid input!");
+        thisAction();
+    }
+
     private void showAllCourses(Student student){
-        database.showSchools();
+        logic.database.showSchools();
         System.out.println("please choose a school: ");
         String input = scanner.next();
         redirectLogin(input);
@@ -222,16 +242,13 @@ public class Cli {
         }else{
             try {
                 School schoolCode = School.values()[Integer.parseInt(input)-1];
-                database.showCourses(schoolCode);
+                logic.database.showCourses(schoolCode);
                 System.out.println();
 
             }catch (ArrayIndexOutOfBoundsException ex){
-                System.out.println("invalid number!");
-                thisAction();
+                invalidInput();
             }
         }
-
-
         //todo: complete this
     }
 

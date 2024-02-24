@@ -25,6 +25,22 @@ public class Student extends User {
     }
     private ArrayList<Course> registeredCourses;
 
+    public boolean[][] getWeekSchedule() {
+        return weekSchedule;
+    }
+
+    public void setWeekSchedule(boolean[][] weekSchedule) {
+        this.weekSchedule = weekSchedule;
+    }
+
+    private void setBusy(Course course){
+        for (int j =0; j<course.getDays().length; j++) {
+            for (int i = 0; i < course.getUnits(); i++) {
+                weekSchedule[course.getDays()[j]][course.getHours()[i]] = true;
+            }
+        }
+    }
+
     public ArrayList<Course> getRegisteredCourses() {
         return registeredCourses;
     }
@@ -36,6 +52,7 @@ public class Student extends User {
     public void addRegisteredCourse(Course course){
         //todo: Police
         if(Police.isValid(this, course)) {
+            setBusy(course);
             registeredCourses.add(course);
             System.out.println("course was registered successfully.");
         }else{

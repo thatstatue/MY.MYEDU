@@ -45,7 +45,7 @@ public class Cli {
             }
             case "show all courses" -> {
                 if (thisUser instanceof Student) {
-                    showAllCourses((Student) (thisUser));
+                    showAllCourses();
                     changeInCourses((Student) (thisUser));
                 }else{
                     //todo: complete for admin
@@ -206,6 +206,12 @@ public class Cli {
 
     private void studentOverview(Student student){
         System.out.println("1- show registered courses\n2- show all courses for schools");
+//        for (int i = 0; i< 6; i++){
+//            for (int j = 0;j< 26; j++){
+//                System.out.println(student.getWeekSchedule()[i][j]);
+//            }
+//        }
+
         String input = scanner.next();
         redirectLogin(input);
         if (input.equals("back")) {
@@ -217,7 +223,7 @@ public class Cli {
                 changeInCourses(student);
             }else if (input.equals("2")){
                 addAction("show all courses");
-                showAllCourses(student);
+                showAllCourses();
                 changeInCourses(student);
             }else{
                 invalidInput();
@@ -232,7 +238,7 @@ public class Cli {
         thisAction();
     }
 
-    private void showAllCourses(Student student){
+    private void showAllCourses(){
         logic.database.showSchools();
         System.out.println("please choose a school: ");
         String input = scanner.next();
@@ -256,3 +262,4 @@ public class Cli {
         return logic;
     }
 }
+//todo: qablan sakhti

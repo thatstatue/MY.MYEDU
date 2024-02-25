@@ -15,10 +15,10 @@ public abstract class Course {
     private final String examDate;
     private ArrayList<Student> regStudents;
 
-    private final String[] dayNumbers = new String[]{
+    public static final String[] dayNumbers = new String[]{
             "sat", "sun","mon","tue","wed","thu"
     };
-    private final String[] startHours = new String[]{
+    public static final String[] startHours = new String[]{
             "07:30", "08:00", "08:30", "09:00",
             "09:30", "10:00", "10:30", "11:00",
             "11:30", "12:00", "12:30", "13:00",

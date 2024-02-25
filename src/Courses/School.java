@@ -1,4 +1,4 @@
 package Courses;
 public enum School {
-    CSMath, CE, EE, IE, Mech, Phy, Langs
+    CSMath, CE, EE, Chem, Phy, Langs
 }

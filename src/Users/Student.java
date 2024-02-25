@@ -8,8 +8,6 @@ import java.util.ArrayList;
 public class Student extends User {
     private int units;
     private boolean[][] weekSchedule;
-    //todo: when u add a course , times should be put to true
-
     public int getUnits() {
         return units;
     }
@@ -33,10 +31,10 @@ public class Student extends User {
         this.weekSchedule = weekSchedule;
     }
 
-    private void setBusy(Course course){
+    private void setBusy(Course course , boolean busy){
         for (int j =0; j<course.getDays().length; j++) {
             for (int i = 0; i < course.getUnits(); i++) {
-                weekSchedule[course.getDays()[j]][course.getHours()[i]] = true;
+                weekSchedule[course.getDays()[j]][course.getHours()[i]] = busy;
             }
         }
     }
@@ -45,14 +43,13 @@ public class Student extends User {
         return registeredCourses;
     }
 
-    public void setRegisteredCourses(ArrayList<Course> registedCourses) {
-        this.registeredCourses = registedCourses;
+    public void setRegisteredCourses(ArrayList<Course> registeredCourses) {
+        this.registeredCourses = registeredCourses;
     }
 
     public void addRegisteredCourse(Course course){
-        //todo: Police
         if(Police.isValid(this, course)) {
-            setBusy(course);
+            setBusy(course , true);
             registeredCourses.add(course);
             System.out.println("course was registered successfully.");
         }else{
@@ -61,11 +58,12 @@ public class Student extends User {
 
     }
     public void removeRegisteredCourse( Course course) {
+        setBusy(course , false);
         registeredCourses.remove(course);
         System.out.println("course was removed successfully.");
     }
     public void status() throws NullPointerException{
-        System.out.println("list of registered courses\n==============");
+        System.out.println("\nlist of registered courses:\n==============");
         int i = 1;
         try {
             for ( Course course : registeredCourses) {
@@ -75,6 +73,6 @@ public class Student extends User {
         }catch (NullPointerException ex){
             System.out.println("you have no registered courses.");
         }
-        System.out.println("==============");
+        System.out.println("==============\n");
     }
 }

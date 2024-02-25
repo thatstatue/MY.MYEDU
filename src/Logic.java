@@ -1,3 +1,5 @@
+import Courses.Course;
+import Courses.Prof;
 import Users.*;
 
 public class Logic {
@@ -17,6 +19,11 @@ public class Logic {
             newUser = new Student(username, password);
         }
         return newUser;
+    }
+
+    public void createCourse(){
+
+        database.addCourse(new Prof());
     }
 
 }

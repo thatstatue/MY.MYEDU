@@ -13,15 +13,15 @@ public class Cli {
     public void initHardcore(){
         Admin admin = new Admin("Admin", "nottheAPpass");
         logic.database.addUser(admin);
-        Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11 , 12, 13, 14}, 1, new ArrayList<>(), 100);
-        Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6 , 7, 8, 9}, 1, new ArrayList<>(), 100);
-        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6 , 7, 8, 9}, 2, new ArrayList<>(), 200);
-        Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6 , 7, 8}, 1, new ArrayList<>(), 80);
+        Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11 , 12, 13, 14}, "1403/03/26", 3, new ArrayList<>(), 100);
+        Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6 , 7, 8, 9}, "1403/03/22", 3,  new ArrayList<>(), 100);
+        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6 , 7, 8, 9}, "1403/03/28",3, new ArrayList<>(), 200);
+        Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6 , 7, 8}, "1403/03/22",3, new ArrayList<>(), 80);
         logic.database.addCourse(AP);
         logic.database.addCourse(SetTheory);
         logic.database.addCourse(Math1);
         logic.database.addCourse(Discrete);
-        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0 , 1, 2, 3}, 1, new ArrayList<>(), 100);
+        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0 , 1, 2, 3}, "1403/03/26" , 11, new ArrayList<>(), 100);
         logic.database.addCourse(LogicGate);
     }
 
@@ -40,6 +40,8 @@ public class Cli {
                     changeInCourses((Student) (thisUser));
                 }else{
                     //todo: complete for admin
+
+
                 }
 
             }
@@ -147,17 +149,27 @@ public class Cli {
     }
     private void adminOverview(Admin admin){
         //todo: view all courses
+        //remove course : aval hame kasaii ke darso daran in ro remove kon az darsashon bad course ro az list remove kone
+        System.out.println("1- show registered courses\n2- show all courses for schools");
+
+    }
+    private String initInput(){
+        String input = scanner.next();
+        redirectLogin(input);
+        return input;
     }
 
     private void changeInCourses(Student student){
-        System.out.println("\n1- add course\n2- remove course");
-        String input = scanner.next();
+        System.out.println("0- go to login page");
+        System.out.println("1- add course\n2- remove course");
+        String input = initInput();
         if (input.equals("back")) {
             backAction();
         } else {
             addAction("show registered courses");
             System.out.println("please provide course code: ");
             int code = scanner.nextInt();
+            redirectLogin(String.valueOf(code));
             boolean exists = false;
             Course courseCode = null;
             for (Course course : logic.database.getCourses()) {
@@ -186,15 +198,15 @@ public class Cli {
                         thisAction();
                     }
                 } else if (input.equals("2")) {
-                    boolean canRemove = true;
+                    boolean cantRemove = true;
                     for (Course course : student.getRegisteredCourses()) {
                         if (course.getCode() == code) {
                             student.removeRegisteredCourse(courseCode);
-                            canRemove = false;
+                            cantRemove = false;
                             break;
                         }
                     }
-                    if (canRemove) {
+                    if (cantRemove) {
                         System.out.println("you didn't have this course.");
                         thisAction();
                     }
@@ -206,14 +218,7 @@ public class Cli {
 
     private void studentOverview(Student student){
         System.out.println("1- show registered courses\n2- show all courses for schools");
-//        for (int i = 0; i< 6; i++){
-//            for (int j = 0;j< 26; j++){
-//                System.out.println(student.getWeekSchedule()[i][j]);
-//            }
-//        }
-
-        String input = scanner.next();
-        redirectLogin(input);
+        String input = initInput();
         if (input.equals("back")) {
             backAction();
         } else {
@@ -229,20 +234,24 @@ public class Cli {
                 invalidInput();
             }
             thisAction();
-            //backAction();
         }
-    }
+    }//done
 
     private void invalidInput(){
         System.out.println("invalid input!");
         thisAction();
+    }//done
+    private void fillInCourseInfo(){
+        System.out.println("please fill in the information: ");
+        System.out.println("\twhich school is offering the course? ");
+        logic.database.showSchools();
+
     }
 
     private void showAllCourses(){
+        System.out.println("0- go to login page");
         logic.database.showSchools();
-        System.out.println("please choose a school: ");
-        String input = scanner.next();
-        redirectLogin(input);
+        String input = initInput();
         if (input.equals("back")){
             backAction();
         }else{
@@ -255,11 +264,9 @@ public class Cli {
                 invalidInput();
             }
         }
-        //todo: complete this
-    }
-
+    }//done
+    //todo: account qablan sakhti
     public Logic getLogic() {
         return logic;
     }
 }
-//todo: qablan sakhti

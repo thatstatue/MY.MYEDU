@@ -9,10 +9,10 @@ public abstract class Course {
     private final School school;
     private final String teacher;
     private final int code;
-    private final int units;
+    private final int units, examTime;
     private final int[] days;
     private final int[] hours;
-    private final int group;
+    private final String examDate;
     private ArrayList<Student> regStudents;
 
     private final String[] dayNumbers = new String[]{
@@ -31,7 +31,7 @@ public abstract class Course {
 
     private int capacity;
 
-    public Course(School school, String name, String teacher, int code, int units, int[] days, int[] hours, int group, ArrayList<Student> regStudents, int capacity) {
+    public Course(School school, String name, String teacher, int code, int units, int[] days, int[] hours, String examDate, int examTime, ArrayList<Student> regStudents, int capacity) {
         this.school = school;
         this.name = name;
         this.teacher = teacher;
@@ -39,13 +39,14 @@ public abstract class Course {
         this.units = units;
         this.days = days;
         this.hours = hours;
-        this.group = group;
+        this.examDate = examDate;
+        this.examTime = examTime;
         this.regStudents = regStudents;
         this.capacity = capacity;
     }
     //todo: هرکس رجیستر کرد باید یکی به ثبتنامیا اضافه شه و فقط وقتی ولید باشه رجیستر کردن که  کپسیتی منهای ثبتنامیا<0 باشه
     public String display(){
-        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tteacher: "+ getTeacher()+ "\tgroup: " + getGroup()+
+        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tteacher: "+ getTeacher()+
                "\ncapacity: "+ getCapacity() + "\tregistered: " + getRegStudents().size() + "\tunits: "+ getUnits()+
                 "\ndays: ";
         String d = "";
@@ -54,9 +55,11 @@ public abstract class Course {
         }
         d += "{from " + startHours[getHours()[0]] +
                 " to "+ startHours[getHours()[getHours().length-1] + 1] + "}\n";
-        return s+ d;
+        d += "\nexam date: "+ getExamDate()+ "\t exam time: " + startHours[getExamTime()];
+        return s+ d +"\n";
     }
 
+    //todo: course setter, exam date setter
     public School getSchool() {
         return school;
     }
@@ -81,6 +84,14 @@ public abstract class Course {
         return name;
     }
 
+    public String getExamDate() {
+        return examDate;
+    }
+
+    public int getExamTime() {
+        return examTime;
+    }
+
     public String getTeacher() {
         return teacher;
     }
@@ -99,10 +110,6 @@ public abstract class Course {
 
     public int[] getHours() {
         return hours;
-    }
-
-    public int getGroup() {
-        return group;
     }
 
     public void addCapacity (int add){

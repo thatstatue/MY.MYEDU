@@ -14,9 +14,10 @@ public class Police {
         }
         return true;
     }
+
     public static boolean isValid(Student student, Course course){
         if (student.getUnits() + course.getUnits() > 20){
-            System.out.println("WAR: maximum units per semaster is 20.");
+            System.out.println("WAR: maximum units per semester is 20.");
             return false;
         }
         boolean [][] ws = student.getWeekSchedule();
@@ -24,7 +25,15 @@ public class Police {
             System.out.println("WAR: you have another course in this time period.");
             return false;
         }
-        //WAR: you have another final exam at this date and time.
+        for (Course course1 : student.getRegisteredCourses()){
+            if (course1.getExamDate().equals(course.getExamDate())){
+                if(course1.getExamTime() == course.getExamTime()){
+                    System.out.println("WAR: you have another final exam at this date and time.");
+                    return false;
+                }
+            }
+        }
+        //
         //WAR: the course capacity is full.
 
         return true;

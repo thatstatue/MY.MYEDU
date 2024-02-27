@@ -11,58 +11,56 @@ public class Cli {
     private final ArrayList<String> actions;
     private User thisUser;
 
-    public void initHardcode(){
-        Admin admin = new Admin("Admin", "nottheAPpass");
+    public void initHardcode() {
+        Admin admin = new Admin("Admin", "2");
         logic.database.addUser(admin);
-        Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11 , 12, 13, 14}, "1403/03/26", 3, new ArrayList<>(), 100);
-        Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6 , 7, 8, 9}, "1403/03/22", 3,  new ArrayList<>(), 100);
-        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6 , 7, 8, 9}, "1403/03/28",3, new ArrayList<>(), 200);
-        Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6 , 7, 8}, "1403/03/22",3, new ArrayList<>(), 80);
+        Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11, 12, 13, 14}, "1403/03/26", 3, new ArrayList<>(), 100);
+        Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6, 7, 8, 9}, "1403/03/22", 3, new ArrayList<>(), 100);
+        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6, 7, 8, 9}, "1403/03/28", 3, new ArrayList<>(), 200);
+        Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6, 7, 8}, "1403/03/22", 3, new ArrayList<>(), 80);
         logic.database.addCourse(AP);
         logic.database.addCourse(SetTheory);
         logic.database.addCourse(Math1);
         logic.database.addCourse(Discrete);
-        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0 , 1, 2, 3}, "1403/03/26" , 11, new ArrayList<>(), 100);
+        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0, 1, 2, 3}, "1403/03/26", 11, new ArrayList<>(), 100);
         logic.database.addCourse(LogicGate);
     }
 
-    private void addAction(String action){
+    private void addAction(String action) {
         if (actions.isEmpty() || !actions.getLast().equals(action)) {
             actions.add(action);
         }
     }
-    private void acting(String action){
+
+    private void acting(String action) {
         switch (action) {
             case "overview" -> overview(thisUser);
             case "login" -> loginPage();
             case "show registered courses" -> {
-                if (thisUser instanceof Student){
-                    ((Student)(thisUser)).status();
+                if (thisUser instanceof Student) {
+                    ((Student) (thisUser)).status();
                     changeInCourses((Student) (thisUser));
-                }else{
+                } else {
                     //todo: complete for admin
                 }
             }
             case "show all courses" -> {
-                if (thisUser instanceof Student) {
-                    showAllCourses();
-                    changeInCourses((Student)(thisUser));
-                }else{
-                    //todo: complete for admin
-                }
-            }
-            case "show all students" -> {
-                logic.database.showStudents();
-                changeInCourses((Admin)(thisUser), false);
-            }
-            case "view and change courses" -> {
                 showAllCourses();
-                changeInCourses((Admin)(thisUser), true);
+                changeInCourses((Student) (thisUser));
             }
         }
     }
+
+    public Student chooseStudent() {
+        logic.database.showStudents();
+        System.out.println("enter a student username");
+        String studentCode = scanner.next();
+        redirect(studentCode);
+        return logic.database.getStudent(studentCode);
+    }
+
     private void backAction() {
-        if (actions.size()>1){
+        if (actions.size() > 1) {
             actions.removeLast();
             String action = actions.getLast();
             // /*
@@ -77,7 +75,7 @@ public class Cli {
     }
 
     private void thisAction() {
-        if (!actions.isEmpty()){
+        if (!actions.isEmpty()) {
             acting(actions.getLast());
         }
     }
@@ -87,15 +85,17 @@ public class Cli {
         actions = new ArrayList<>();
         initHardcode();
     }
-    public void run(){
-        while(true) {
+
+    public void run() {
+        while (true) {
             loginPage();
         }
     }
-    public void redirect(String input){
-        if (input.equals("0")){
+
+    public void redirect(String input) {
+        if (input.equals("0")) {
             loginPage();
-        }else if (input.equals("back")){
+        } else if (input.equals("back")) {
             backAction();
         }
     }
@@ -111,13 +111,14 @@ public class Cli {
     public void loginPage() {
         addAction("login");
         System.out.println("1- login\n2- create account");
-        String input = scanner.nextLine();
+        String input = scanner.next();
         redirect(input);
-        if (input.equals("1") || input.equals("2")){
+        if (input.equals("1") || input.equals("2")) {
             System.out.println("provide username:");
-            String username = scanner.nextLine();
+            String username = scanner.next();
+            redirect(username);
             System.out.println("provide password:");
-            String password = scanner.nextLine();
+            String password = scanner.next();
             if (input.equals("1")) {
                 boolean exists = false;
                 for (User user : logic.database.getUsers()) {
@@ -140,41 +141,29 @@ public class Cli {
                 System.out.println("your account was created! redirecting you to login page ...");
                 redirect("0");
             }
-        }else {
+        } else {
             invalidInput();
+            System.out.println("WAR: there is no command for this entered code");
         }
     }
 
 
-    public void overview(User user){
+    public void overview(User user) {
         addAction("overview");
         System.out.println("you are logged in!");
         System.out.println("0- go to login page");
-        if (user instanceof Admin){
+        if (user instanceof Admin) {
             adminOverview((Admin) user);
-        }else {
+        } else {
             studentOverview((Student) user);
         }
     }
-    private void adminOverview(Admin admin){
 
-        //remove course : aval hame kasaii ke darso daran in ro remove kon az darsashon bad course ro az list remove kone
-        System.out.println("1- show all students\n2- view and change courses for schools");
-        //todo: fix the bug here
-        String input = scanner.nextLine();
-        redirect(input);
-        if (input.equals("1")) {
-            addAction("show all students");
-            logic.database.showStudents();
-            changeInCourses(admin, false);
-        }else if (input.equals("2")) {
-            addAction("view and change courses");
-            showAllCourses();
-            changeInCourses(admin, true);
-        }else {
-            invalidInput();
-        }
-        thisAction(); //?
+    private void adminOverview(Admin admin) {
+        System.out.println("you can view and change courses for schools");
+        School school = showAllCourses();
+        changeInCourses(admin, school);
+        thisAction();
     }
 //    private String initInput(){
 //        String input = scanner.nextLine();
@@ -182,15 +171,16 @@ public class Cli {
 //        return input;
 //    }
 
-    private void changeInCourses(Admin admin, boolean isCourse){
+    private void changeInCourses(Admin admin, School school) {
         System.out.println("0- go to login page");
-        if (isCourse) {
-            System.out.println("1- create a new course\n2- apply changes on a course");
-            String input = scanner.nextLine();
-            redirect(input);
+        System.out.println("1- create a new course\n2- apply changes on a course");
+
+        String input = scanner.next();
+        redirect(input);
+        try {
             if (input.equals("1")) {
-                fillInCourseInfo();
-            }else if (input.equals("2")) {
+                fillInCourseInfo(school);
+            } else if (input.equals("2")) {
                 System.out.println("please provide a course code: ");
                 int code = scanner.nextInt();
                 redirect(String.valueOf(code));
@@ -208,28 +198,28 @@ public class Cli {
                 } else {
                     System.out.println("1- remove the course\n2- remove a student from the course\n" +
                             "3- add a student to the course\n4- add to the capacity of the course");
-                    String command = scanner.nextLine();
+                    String command = scanner.next();
                     redirect(command);
                     if (command.equals("1")) {
-                        for (Student student: courseCode.getRegStudents()){
+                        for (int i = 0; i < courseCode.getRegStudents().size() ; i++ ) {
+                            Student student = courseCode.getRegStudents().get(i);
                             student.removeRegisteredCourse(courseCode);
                         }
                         logic.database.getCourses().remove(courseCode);
-                        //check
                         System.out.println("this course was removed completely.");
 
                     } else if (command.equals("2")) {
                         System.out.println("list of registered students in this course:");
-                        for (Student student: courseCode.getRegStudents()){
-                            System.out.println("\t"+ student.getUsername());
+                        for (Student student : courseCode.getRegStudents()) {
+                            System.out.println("\t" + student.getUsername());
                         }
                         System.out.println("============\nplease enter the username you want removed:");
-                        String username = scanner.nextLine();
+                        String username = scanner.next();
                         redirect(username);
                         Student removingStudent = null;
-                        boolean exist= false;
-                        for (Student student: courseCode.getRegStudents()){
-                            if (student.getUsername().equals(username)){
+                        boolean exist = false;
+                        for (Student student : courseCode.getRegStudents()) {
+                            if (student.getUsername().equals(username)) {
                                 removingStudent = student;
                                 exist = true;
                                 break;
@@ -238,17 +228,17 @@ public class Cli {
                         if (exist) {
                             courseCode.removeStudent(removingStudent);
                             System.out.println("the provided student is no longer registered in this course.");
-                        }else{
+                        } else {
                             System.out.println("the provided student did not have this course.");
                         }
                     } else if (command.equals("3")) {
                         System.out.println("============\nplease enter the username you want added:");
-                        String username = scanner.nextLine();
+                        String username = scanner.next();
                         redirect(username);
                         Student addingStudent = logic.database.getStudent(username);
-                        boolean exist= false;
-                        for (Student student: courseCode.getRegStudents()){
-                            if (student.getUsername().equals(username)){
+                        boolean exist = false;
+                        for (Student student : courseCode.getRegStudents()) {
+                            if (student.getUsername().equals(username)) {
                                 addingStudent = student;
                                 exist = true;
                                 break;
@@ -258,34 +248,40 @@ public class Cli {
                             if (Police.isValid(addingStudent, courseCode)) {
                                 courseCode.addStudent(addingStudent);
                                 System.out.println("the provided student is now registered in this course.");
-                            }else{
+                            } else {
                                 System.out.println("was not able to add the student.");
                             }
-                        }else{
+                        } else {
                             System.out.println("the provided student already has this course.");
                         }
-                    }else if (command.equals("4")){
+                    } else if (command.equals("4")) {
                         System.out.println("the capacity is " + courseCode.getCapacity());
                         System.out.println("please enter the number you want to add to the capacity");
-                        String plus = scanner.nextLine();
+                        String plus = scanner.next();
                         redirect(plus);
                         courseCode.setCapacity(courseCode.getCapacity() + Integer.parseInt(plus));
                         System.out.println("the new capacity is " + courseCode.getCapacity());
-                    }else {
+                    } else {
                         invalidInput();
+                        System.out.println("WAR: there is no command for this entered code");
                     }
                 }
+            } else {
+                invalidInput();
+                System.out.println("WAR: there is no command for this entered code");
             }
-        }else{
-            // TODO
+        } catch (InputMismatchException e) {
+            invalidInput();
+            System.out.println("WAR: required format was ignored");
         }
+        System.out.println("redirecting you to the previous page...");
         thisAction();
     }
 
-    private void changeInCourses(Student student){
+    private void changeInCourses(Student student) {
         System.out.println("0- go to login page");
         System.out.println("1- add course\n2- remove course");
-        String input = scanner.nextLine();
+        String input = scanner.next();
         redirect(input);
         addAction("show registered courses");
         System.out.println("please provide a course code: ");
@@ -335,159 +331,188 @@ public class Cli {
                 }
                 thisAction();
             }
-        }catch (InputMismatchException ex){
+        } catch (InputMismatchException ex) {
             System.out.println("you should enter a code that includes numbers only");
             thisAction();
         }
     }
 
-    private void studentOverview(Student student){
+    private void studentOverview(Student student) {
         System.out.println("1- show registered courses\n2- show all courses for schools");
-        String input = scanner.nextLine();
+        String input = scanner.next();
         redirect(input);
         if (input.equals("1")) {
             addAction("show registered courses");
             student.status();
             changeInCourses(student);
-        }else if (input.equals("2")) {
+        } else if (input.equals("2")) {
             addAction("show all courses");
             showAllCourses();
             changeInCourses(student);
-        }else {
+        } else {
             invalidInput();
         }
-            thisAction();
+        thisAction();
     }//done
 
-    private void invalidInput(){
+    private void invalidInput() {
         System.out.println("invalid input!");
         thisAction();
     }//done
-    private void fillInCourseInfo(){//todo: add to thisaction
+
+    private void fillInCourseInfo(School school) {//todo: add to thisaction
         System.out.println("please fill in the information: ");
-        System.out.println("\twhich school is offering the course? ");
-        logic.database.showSchools();
-        String input = scanner.nextLine();
-        redirect(input);
-        School school = null;
-        String name = "";
-        String teacher = "";
-        int code = 11;
-        int units = 21;
+        System.out.println("School of " + school.name());
+
+        String name;
+        String teacher;
+        int code;
+        int units;
         int[] days;
         int[] hours;
-        String examDate = "";
-        int examTime = 27;
+        String examDate;
+        int examTime;
         ArrayList<Student> regStudents = new ArrayList<>();
-        int capacity = 1;
+        int capacity;
         boolean isGen = false;
-        //todo: changes in capacity should be handled
 
         try {
-            school = School.values()[Integer.parseInt(input)-1];
             System.out.println("\tthe course name:");
             name = scanner.nextLine();
+            String name2 = scanner.nextLine();
+            name += name2;
             redirect(name);
             System.out.println("\tthe teacher:");
             teacher = scanner.nextLine();
             redirect(teacher);
             System.out.println("\tthe course code:");
-            String code1 = scanner.nextLine();
+            String code1 = scanner.next();
             redirect(code1);
             code = Integer.parseInt(code1);
             System.out.println("\tthe number of units:");
-            String units1 = scanner.nextLine();
+            String units1 = scanner.next();
             redirect(units1);
             units = Integer.parseInt(units1);
             System.out.println("\tcapacity of the course:");
-            String capacity1 = scanner.nextLine();
+            String capacity1 = scanner.next();
             redirect(capacity1);
             capacity = Integer.parseInt(capacity1);
             System.out.println("\tthe course is: \n1- General\n2- Professional");
-            String t1 = scanner.nextLine();
+            String t1 = scanner.next();
             redirect(t1);
-            if (t1.equals("1")){
+            if (t1.equals("1")) {
                 isGen = true;
-            }else if (!t1.equals("2")){
+            } else if (!t1.equals("2")) {
                 throw new NumberFormatException();
             }
             System.out.println("\thow many days in week the class is on");
-            String t0 = scanner.nextLine();
+            String t0 = scanner.next();
             redirect(t0);
             int t = Integer.parseInt(t0);
             days = new int[t];
             System.out.println("\tplease put in the numbers for each day the class is on" +
                     "\nthis are the codes for days:");
-            for (int i = 0; i<6; i++){
-                System.out.println(i+1 + "- " + Course.dayNumbers[i]);
+            for (int i = 0; i < 6; i++) {
+                System.out.println(i + 1 + "- " + Course.dayNumbers[i]);
             }
-            for (int i = 0; i < t; i++){
-                System.out.println("day " + (i+1)+ " of class: ");
+
+            for (int i = 0; i < t; i++) {
+                System.out.println("day " + (i + 1) + " of class: ");
                 int dayCode = scanner.nextInt();
-                if (dayCode<0 || dayCode>6){
+                if (dayCode < 0 || dayCode > 5) {
                     invalidInput();
-                }else if (dayCode == 0){
+                } else if (dayCode == 0) {
                     redirect("0");
-                }else{
+                } else {
                     days[i] = dayCode - 1;
                 }
             }
 
-            System.out.println("\tthis is the list of time tables: \n=============");
-            for (int i = 0; i<26; i++){
-                System.out.println(i+1 + "- " + Course.startHours[i]);
-            }
-            System.out.println("=============\n");
+            Course.showStartHours();
             System.out.println("\tcode of the time class starts: ");
             int start = scanner.nextInt();
-            if (start<0 || start>26){
+            if (start < 0 || start > 25) {
                 invalidInput();
-            }else if (start == 0){
+            } else if (start == 0) {
                 redirect("0");
             }
             System.out.println("\tcode of the time class ends: ");
             int end = scanner.nextInt();
-            if (end == 0){
+            if (end == 0) {
                 redirect("0");
-            }else if (end<=start){
+            } else if (end <= start) {
                 System.out.println("WAR: the class should end after it starts!");
                 thisAction();
-            } else if (end<0 || start>26){
+            } else if (end < 0 || start > 26) {
                 invalidInput();
             }
-            hours = new int[end-start];
-            for (int i = start; i < end; i++){
-                hours[i- start] = i;
+            hours = new int[end - start];
+            for (int i = start - 1; i < end - 1; i++) {
+                hours[i - start + 1] = i;
             }
 
-            System.out.println("thank you for providing the information, creating the course ...");
-            logic.createCourse(isGen, school, name, teacher, code, units, days, hours, examDate, examTime, null, capacity);
+            examDate = setExamDate();
 
-        }catch (ArrayIndexOutOfBoundsException | NegativeArraySizeException
-                | NullPointerException | NumberFormatException ex){
+            Course.showStartHours();
+            System.out.println("\tplease select a time for the exam: ");
+            examTime = scanner.nextInt() - 1;
+            if (examTime < 0 || examTime > 26) {
+                invalidInput();
+            } else if (examTime == 0) {
+                redirect("0");
+            }
+            System.out.println("thank you for providing the information!");
+            logic.createCourse(isGen, school, name, teacher, code, units, days, hours, examDate, examTime, regStudents, capacity);
+            System.out.println("course " + name + " was created.");
+        } catch (ArrayIndexOutOfBoundsException | NegativeArraySizeException
+                 | NullPointerException | NumberFormatException ex) {
             invalidInput();
         }
     }
 
-    private void showAllCourses(){
+    private String setExamDate() {
+        System.out.println("to set exam date, enter the date in this format: yyyy/mm/dd");
+        System.out.println("\texample: 1403/03/04");
+        boolean confirmed = false;
+        String exam = "";
+        while (!confirmed) {
+            exam = scanner.next();
+            redirect(exam);
+            try {
+                if (exam.length() == 10 && exam.charAt(4) == '/' && exam.charAt(7) == '/'
+                        && Integer.parseInt(exam.substring(5, 7)) < 13
+                        && Integer.parseInt(exam.substring(8, 10)) < 32) {
+                    confirmed = true;
+                } else {
+                    System.out.println("WAR: incorrect format. \nplease enter again:\texample: 1403/03/04");
+                }
+            } catch (NumberFormatException exception) {
+                System.out.println("WAR: incorrect format. \nplease enter again:\texample: 1403/04/01");
+            }
+        }
+        return exam;
+    }
+
+    private School showAllCourses() {
+        System.out.println("please choose a school to view its courses: \n");
 
         System.out.println("0- go to login page");
         logic.database.showSchools();
-        String input = scanner.nextLine();
+        String input = scanner.next();
         redirect(input);
-        if (input.equals("back")){
-            backAction();
-        }else{
-            try {
-                School schoolCode = School.values()[Integer.parseInt(input)-1];
-                logic.database.showCourses(schoolCode);
-                System.out.println();
-
-            }catch (ArrayIndexOutOfBoundsException ex){
-                invalidInput();
-            }
+        try {
+            School schoolCode = School.values()[Integer.parseInt(input) - 1];
+            logic.database.showCourses(schoolCode);
+            return schoolCode;
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            invalidInput();
+            System.out.println("WAR: this code doesn't belong to any schools");
+        } catch (NumberFormatException ex) {
+            System.out.println("please enter a code in numbers");
         }
-    }//done
+        return null;
+    }
+
     //todo: account qablan sakhti
     public Logic getLogic() {
         return logic;

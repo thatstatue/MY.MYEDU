@@ -23,6 +23,15 @@ public class Database {
     public ArrayList<User> getUsers() {
         return users;
     }
+    public Student getStudent (String username){
+        for (User user: getUsers()){
+            if (user instanceof  Student && user.getUsername().equals(username)){
+                return (Student)(user);
+            }
+        }
+        System.out.println("this username does not belong to any student.");
+        return null;
+    }
 
     public void addCourse(Course course){
         courses.add(course);

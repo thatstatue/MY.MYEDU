@@ -1,12 +1,11 @@
 package Users;
 
-import Courses.Course;
-import Courses.Police;
+import Courses.*;
 
 import java.util.ArrayList;
 
 public class Student extends User {
-    private int units;
+    private int units, genUnits;
     private boolean[][] weekSchedule;
     public int getUnits() {
         return units;
@@ -51,16 +50,44 @@ public class Student extends User {
         if(Police.isValid(this, course)) {
             setBusy(course , true);
             registeredCourses.add(course);
+            if (!course.isInStudents(this)) {
+                course.addStudent(this);
+            }
+            if (course instanceof General){
+                genUnits += course.getUnits();
+            }
             System.out.println("course was registered successfully.");
         }else{
             System.out.println("course was not registered.");
         }
 
     }
-    public void removeRegisteredCourse( Course course) {
+
+    public int getGenUnits() {
+        return genUnits;
+    }
+
+    public void setGenUnits(int genUnits) {
+        this.genUnits = genUnits;
+    }
+
+    public void removeRegisteredCourse(Course course) {
         setBusy(course , false);
         registeredCourses.remove(course);
+        if (course.isInStudents(this)) {
+            course.removeStudent(this);
+        }
+        if (course instanceof General){
+            genUnits -= course.getUnits();
+        }
         System.out.println("course was removed successfully.");
+    }
+
+    public boolean isInCourses (Course course) {
+        for (Course course1 : getRegisteredCourses()) {
+            return true;
+        }
+        return false;
     }
     public void status() throws NullPointerException{
         System.out.println("\nlist of registered courses:\n==============");

@@ -27,6 +27,16 @@ public abstract class Course {
             "17:30", "18:00", "18:30", "19:00",
             "19:30", "20:00", "20:30"
     };
+    public static final void showStartHours(){
+        System.out.println("\tthis is the list of time tables: \n=============");
+        for (int i = 0; i<26; i++){
+            System.out.print(i+1 + "- " + startHours[i] + "\t\t");
+            if (i%3 == 2){
+                System.out.println();
+            }
+        }
+        System.out.println("=============\n");
+    }
 
 
     private int capacity;
@@ -44,22 +54,20 @@ public abstract class Course {
         this.regStudents = regStudents;
         this.capacity = capacity;
     }
-    //todo: هرکس رجیستر کرد باید یکی به ثبتنامیا اضافه شه و فقط وقتی ولید باشه رجیستر کردن که  کپسیتی منهای ثبتنامیا<0 باشه
     public String display(){
-        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tteacher: "+ getTeacher()+
-               "\ncapacity: "+ getCapacity() + "\tregistered: " + getRegStudents().size() + "\tunits: "+ getUnits()+
+        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tprofessor:: "+ getTeacher()+
+               "\t\tcapacity: "+ getCapacity() + "\tregistered: " + getRegStudents().size() + "\tunits: "+ getUnits()+
                 "\ndays: ";
         String d = "";
         for (int num: days){
             d += dayNumbers[num] + " ";
         }
         d += "{from " + startHours[getHours()[0]] +
-                " to "+ startHours[getHours()[getHours().length-1] + 1] + "}\n";
-        d += "\nexam date: "+ getExamDate()+ "\t exam time: " + startHours[getExamTime()];
+                " to "+ startHours[getHours()[getHours().length-1] + 1] + "}\t\t";
+        d += "exam date: "+ getExamDate()+ "\t exam time: " + startHours[getExamTime()];
         return s+ d +"\n";
     }
 
-    //todo: course setter, exam date setter
     public School getSchool() {
         return school;
     }
@@ -117,12 +125,25 @@ public abstract class Course {
     }
     public void addStudent (Student student){
         regStudents.add(student);
-        //todo: check isValid
+        if (!student.isInCourses(this)) {
+            student.addRegisteredCourse(this);
+        }
         System.out.println("student was added to the course");
         showRegStudents();
     }
+    public boolean isInStudents (Student student){
+        for (Student student1: getRegStudents()){
+            if (student1.equals(student)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void removeStudent (Student student){
         regStudents.remove(student);
+        if (student.isInCourses(this)) {
+            student.removeRegisteredCourse(this);
+        }
         System.out.println("student was removed from the course");
         showRegStudents();
     }

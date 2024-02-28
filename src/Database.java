@@ -5,22 +5,22 @@ import java.util.ArrayList;
 
 public class Database {
 
-    private final ArrayList<User> users;
-    private final ArrayList<Course> courses;
+    static ArrayList<User> users;
+    static ArrayList<Course> courses;
 
     public Database() {
         this(new ArrayList<>(), new ArrayList<>());
     }
     public Database(ArrayList<User> users, ArrayList<Course> courses){
-        this.users = users;
-        this.courses = courses;
+        Database.users = users;
+        Database.courses = courses;
     }
 
     public void addUser(User user){
         users.add(user);
     }
 
-    public ArrayList<User> getUsers() {
+    public static ArrayList<User> getUsers() {
         return users;
     }
     public Student getStudent (String username){
@@ -37,7 +37,7 @@ public class Database {
         courses.add(course);
     }
 
-    public ArrayList<Course> getCourses() {
+    public static ArrayList<Course> getCourses() {
         return courses;
     }
 

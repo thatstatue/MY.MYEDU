@@ -55,7 +55,7 @@ public abstract class Course {
         this.capacity = capacity;
     }
     public String display(){
-        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tprofessor:: "+ getTeacher()+
+        String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tprofessor: "+ getTeacher()+
                "\t\tcapacity: "+ getCapacity() + "\tregistered: " + getRegStudents().size() + "\tunits: "+ getUnits()+
                 "\ndays: ";
         String d = "";

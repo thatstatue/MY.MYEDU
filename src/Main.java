@@ -1,28 +1,11 @@
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        Cli cli = new Cli(new Logic(new Database()));
-        cli.run();
+        File file = new File("");
+        File studentsP = new File(file, "students_production.txt");
+        System.out.println(file.getAbsolutePath());
+        new Cli(new Logic(new Database())).run();
     }
-
-
-    //if login admin : create account is available
-    //database should have a list of شماره دانشجویی و رمز
-
-    /*لیست دروس ثبت نامی": دروس
-     ثبت نام شده خود را با جزئیات زمان امتحان، تخصصی
-    یا عمومی بودن درس را ببیند
-
-     و بتواند یک یا چند درس را با
-    وارد کردن کد درس حذف کند.
-
-     اگر گزینه "لیست دروس ارائه شده"
-     را انتخاب کرد، لیست تمام دانشکده‌های موجود به دانشجو نشان
-    داده شود و در این مرحله کاربر می‌تواند یکی از دانشکده‌ها را
-     انتخاب کند. اگر دانشجو یکی از دانشکده‌ها را انتخاب کرد
-      بتواند لیست را ببیندو یک
-     یا چند درس را با وارد کردن کد درس اخذ کند(در صورت وجود ظرفیت)
-*/
-//یسری پراپرتی باید به کورس اضافه کنم
     // (سافت کور از فایل بخونم کورسا رو
 }

@@ -12,10 +12,12 @@ public class Cli {
     private final Logic logic;
     private final ArrayList<String> actions;
     private User thisUser;
-    private FileManager fileManager;
+    private School thisSchool;
+    private final FileManager fileManager;
+
 
     public void initHardcode() {
-        Admin admin = new Admin("Admin", "2");
+        Admin admin = new Admin("Admin", "nottheAPpass");
         logic.database.addUser(admin);
         Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11, 12, 13, 14}, "1403/03/26", 3, new ArrayList<>(), 100);
         Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6, 7, 8, 9}, "1403/03/22", 3, new ArrayList<>(), 100);
@@ -43,36 +45,29 @@ public class Cli {
                 if (thisUser instanceof Student) {
                     ((Student) (thisUser)).status();
                     changeInCourses((Student) (thisUser));
-                } else {
-                    //todo: complete for admin
                 }
             }
             case "show all courses" -> {
                 showAllCourses();
                 changeInCourses((Student) (thisUser));
             }
-        }
-    }
+            case "fill in info" -> {
+                fillInCourseInfo(thisSchool);
 
-    public Student chooseStudent() {
-        logic.database.showStudents();
-        System.out.println("enter a student username");
-        String studentCode = scanner.next();
-        redirect(studentCode);
-        return logic.database.getStudent(studentCode);
+            }
+            case "import" -> exandimport(true);
+            case "export" -> exandimport(false);
+            case "view and change courses" -> {
+                School school = showAllCourses();
+                changeInCourses((Admin) (thisUser), school);
+            }
+        }
     }
 
     private void backAction() {
         if (actions.size() > 1) {
             actions.removeLast();
             String action = actions.getLast();
-            // /*
-            System.out.println("\n----");
-            for (String a : actions) {
-                System.out.println(a);
-            }
-            System.out.println("----\n");
-            // */
             acting(action);
         }
     }
@@ -93,7 +88,6 @@ public class Cli {
     public void run() {
         File file = new File("");
         current = new File(file.getAbsolutePath(), "students_production.txt");
-        System.out.println(current.getAbsolutePath());
         fileManager.importData(current);
         while (true) {
             loginPage();
@@ -129,7 +123,7 @@ public class Cli {
             String password = scanner.next();
             if (input.equals("1")) {
                 boolean exists = false;
-                for (User user : logic.database.getUsers()) {
+                for (User user : Database.getUsers()) {
                     if (user.getUsername().equals(username) &&
                             user.getPassword().equals(password)) {
                         //login
@@ -160,6 +154,7 @@ public class Cli {
     public void overview(User user) {
         addAction("overview");
         System.out.println("you are logged in!");
+        System.out.println("0- go to login page");
         if (user instanceof Admin) {
             adminOverview((Admin) user);
         } else {
@@ -168,33 +163,58 @@ public class Cli {
     }
 
     private void adminOverview(Admin admin) {
-        System.out.println("you can view and change courses for schools");
-        School school = showAllCourses();
-        changeInCourses(admin, school);
+        System.out.println("1- view and change courses for schools\n2- import data from file\n3- export current data");
+        String command = scanner.next();
+        redirect(command);
+        if (command.equals("1")) {
+            addAction("view and change courses");
+            School school = showAllCourses();
+            changeInCourses(admin, school);
+        } else {
+            if (command.equals("2")) {
+                addAction("import");
+                exandimport(true);
+            } else if (command.equals("3")) {
+                addAction("export");
+                exandimport(false);
+            } else invalidInput();
+        }
         thisAction();
     }
-//    private String initInput(){
-//        String input = scanner.nextLine();
-//        redirect(input);
-//        return input;
-//    }
+
+    private void exandimport(boolean isImport) {
+        System.out.println("provide an absolute path");
+        String absPath = scanner.next();
+        redirect(absPath);
+        File file = new File(absPath);
+        if (file.exists()) {
+            if (isImport) {
+                fileManager.importData(file);
+            } else {
+                fileManager.exportData(file);
+            }
+        } else {
+            System.out.println("this absolute path doesn't belong to any files.");
+        }
+    }
 
     private void changeInCourses(Admin admin, School school) {
         System.out.println("0- go to login page");
         System.out.println("1- create a new course\n2- apply changes on a course");
-
+        thisSchool = school;
         String input = scanner.next();
         redirect(input);
         try {
             if (input.equals("1")) {
                 fillInCourseInfo(school);
+                addAction("fill in info");
             } else if (input.equals("2")) {
                 System.out.println("please provide a course code: ");
                 int code = scanner.nextInt();
                 redirect(String.valueOf(code));
                 boolean exists = false;
                 Course courseCode = null;
-                for (Course course : logic.database.getCourses()) {
+                for (Course course : Database.getCourses()) {
                     if (course.getCode() == code) {
                         courseCode = course;
                         exists = true;
@@ -208,70 +228,75 @@ public class Cli {
                             "3- add a student to the course\n4- add to the capacity of the course");
                     String command = scanner.next();
                     redirect(command);
-                    if (command.equals("1")) {
-                        for (int i = 0; i < courseCode.getRegStudents().size() ; i++ ) {
-                            Student student = courseCode.getRegStudents().get(i);
-                            student.removeRegisteredCourse(courseCode);
-                        }
-                        logic.database.getCourses().remove(courseCode);
-                        System.out.println("this course was removed completely.");
-
-                    } else if (command.equals("2")) {
-                        System.out.println("list of registered students in this course:");
-                        for (Student student : courseCode.getRegStudents()) {
-                            System.out.println("\t" + student.getUsername());
-                        }
-                        System.out.println("============\nplease enter the username you want removed:");
-                        String username = scanner.next();
-                        redirect(username);
-                        Student removingStudent = null;
-                        boolean exist = false;
-                        for (Student student : courseCode.getRegStudents()) {
-                            if (student.getUsername().equals(username)) {
-                                removingStudent = student;
-                                exist = true;
-                                break;
+                    switch (command) {
+                        case "1" -> {
+                            for (int i = 0; i < courseCode.getRegStudents().size(); i++) {
+                                Student student = courseCode.getRegStudents().get(i);
+                                student.removeRegisteredCourse(courseCode);
                             }
+                            Database.getCourses().remove(courseCode);
+                            System.out.println("this course was removed completely.");
                         }
-                        if (exist) {
-                            courseCode.removeStudent(removingStudent);
-                            System.out.println("the provided student is no longer registered in this course.");
-                        } else {
-                            System.out.println("the provided student did not have this course.");
-                        }
-                    } else if (command.equals("3")) {
-                        System.out.println("============\nplease enter the username you want added:");
-                        String username = scanner.next();
-                        redirect(username);
-                        Student addingStudent = logic.database.getStudent(username);
-                        boolean exist = false;
-                        for (Student student : courseCode.getRegStudents()) {
-                            if (student.getUsername().equals(username)) {
-                                addingStudent = student;
-                                exist = true;
-                                break;
+                        case "2" -> {
+                            System.out.println("list of registered students in this course:");
+                            for (Student student : courseCode.getRegStudents()) {
+                                System.out.println("\t" + student.getUsername());
                             }
-                        }
-                        if (!exist) {
-                            if (Police.isValid(addingStudent, courseCode)) {
-                                courseCode.addStudent(addingStudent);
-                                System.out.println("the provided student is now registered in this course.");
+                            System.out.println("============\nplease enter the username you want removed:");
+                            String username = scanner.next();
+                            redirect(username);
+                            Student removingStudent = null;
+                            boolean exist = false;
+                            for (Student student : courseCode.getRegStudents()) {
+                                if (student.getUsername().equals(username)) {
+                                    removingStudent = student;
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if (exist) {
+                                courseCode.removeStudent(removingStudent);
+                                System.out.println("the provided student is no longer registered in this course.");
                             } else {
-                                System.out.println("was not able to add the student.");
+                                System.out.println("the provided student did not have this course.");
                             }
-                        } else {
-                            System.out.println("the provided student already has this course.");
                         }
-                    } else if (command.equals("4")) {
-                        System.out.println("the capacity is " + courseCode.getCapacity());
-                        System.out.println("please enter the number you want to add to the capacity");
-                        String plus = scanner.next();
-                        redirect(plus);
-                        courseCode.setCapacity(courseCode.getCapacity() + Integer.parseInt(plus));
-                        System.out.println("the new capacity is " + courseCode.getCapacity());
-                    } else {
-                        invalidInput();
-                        System.out.println("WAR: there is no command for this entered code");
+                        case "3" -> {
+                            System.out.println("============\nplease enter the username you want added:");
+                            String username = scanner.next();
+                            redirect(username);
+                            Student addingStudent = Database.getStudent(username);
+                            boolean exist = false;
+                            for (Student student : courseCode.getRegStudents()) {
+                                if (student.getUsername().equals(username)) {
+                                    addingStudent = student;
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if (!exist) {
+                                if (Police.isValid(addingStudent, courseCode)) {
+                                    courseCode.addStudent(addingStudent);
+                                    System.out.println("the provided student is now registered in this course.");
+                                } else {
+                                    System.out.println("was not able to add the student.");
+                                }
+                            } else {
+                                System.out.println("the provided student already has this course.");
+                            }
+                        }
+                        case "4" -> {
+                            System.out.println("the capacity is " + courseCode.getCapacity());
+                            System.out.println("please enter the number you want to add to the capacity");
+                            String plus = scanner.next();
+                            redirect(plus);
+                            courseCode.addCapacity(Integer.parseInt(plus));
+                            System.out.println("the new capacity is " + courseCode.getCapacity());
+                        }
+                        default -> {
+                            invalidInput();
+                            System.out.println("WAR: there is no command for this entered code");
+                        }
                     }
                 }
             } else {
@@ -298,7 +323,7 @@ public class Cli {
             redirect(String.valueOf(code));
             boolean exists = false;
             Course courseCode = null;
-            for (Course course : logic.database.getCourses()) {
+            for (Course course : Database.getCourses()) {
                 if (course.getCode() == code) {
                     courseCode = course;
                     exists = true;
@@ -319,7 +344,12 @@ public class Cli {
                         }
                     }
                     if (canAdd) {
-                        student.addRegisteredCourse(courseCode);
+                        boolean mes = student.addRegisteredCourse(courseCode);
+                        if (mes) {
+                            System.out.println("course was registered successfully.");
+                        } else {
+                            System.out.println("course was not registered.");
+                        }
                         fileManager.exportData(current);
                     } else {
                         thisAction();
@@ -371,7 +401,7 @@ public class Cli {
         thisAction();
     }//done
 
-    private void fillInCourseInfo(School school) {//todo: add to thisaction
+    private void fillInCourseInfo(School school) {
         System.out.println("please fill in the information: ");
         System.out.println("School of " + school.name());
 

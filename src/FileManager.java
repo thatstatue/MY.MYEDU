@@ -14,6 +14,7 @@ public class FileManager implements Compiler {
 
     @Override
     public void exportData(File file) {
+        Course.setShowMessages(false);
         //1. users.size #
         //2.{username,password}\t
         //3.courses.size #
@@ -28,19 +29,6 @@ public class FileManager implements Compiler {
             if (user instanceof Student student) {
                 usersData.append("{").append(student.getUsername());
                 usersData.append(",").append(student.getPassword())/*.append("|")*/;
-//                for (Course course : student.getRegisteredCourses()) {
-//                    usersData.append(course.getCode()).append(",");
-//                }
-//                usersData.append("|");
-//                for (int i = 0; i < 6; i++) {
-//                    for (int j = 0; j < 26; j++) {
-//                        if(student.getWeekSchedule()[i][j]){
-//                            usersData.append("t");
-//                        }else{
-//                            usersData.append("f");
-//                        }
-//                    }
-//                }
                 usersData.append("}");
             }
         }
@@ -64,25 +52,20 @@ public class FileManager implements Compiler {
             coursesData.append("|");
             for (int i = 0; i < a; i++) {
                 coursesData.append(course.getDays()[i]);
-                if (i == a - 1){
+                if (i == a - 1) {
                     coursesData.append("|");
-                }else{
+                } else {
                     coursesData.append(",");
                 }
             }
-            for (int i = 0; i < b; i++) {
-                coursesData.append(course.getHours()[i]);
-                if (i == b - 1){
-                    coursesData.append("|");
-                }else{
-                    coursesData.append(",");
-                }
-            }
+            coursesData.append(course.getHours()[0]).append(",");
+            coursesData.append(course.getHours()[b - 1]).append("|");
+
             coursesData.append(course.getExamDate());
             coursesData.append(",").append(course.getExamTime()).append("|");
-            if (course instanceof General){
+            if (course instanceof General) {
                 coursesData.append("G|");
-            }else{
+            } else {
                 coursesData.append("F|");
             }
             for (Student student : course.getRegStudents()) {
@@ -94,11 +77,13 @@ public class FileManager implements Compiler {
             try {
                 Files.writeString(fileName, usersData + "\n" + coursesData +"}");
             } catch (IOException e) {
-                System.out.println("error occurred while exporting data.");;
+                System.out.println("error occurred while exporting data.");
             }
         } catch (FileSystemNotFoundException e) {
             System.out.println("ERROR: file not found.");
         }
+        Course.setShowMessages(true);
+
     }
     private String[] configure(String fileIn){
         int endChar = 0;
@@ -113,6 +98,8 @@ public class FileManager implements Compiler {
 
     @Override
     public void importData(File file) {
+        Course.setShowMessages(false);
+
         //1. users.size #
         //2.{username,password}/n
         //3.courses.size #
@@ -155,6 +142,7 @@ public class FileManager implements Compiler {
             }else {
                 fileIn = fileIn.substring(1);
             }
+            Database.setUsers(users);
 
             //courses:
             i = 0;
@@ -209,7 +197,7 @@ public class FileManager implements Compiler {
                     answers = configure(fileIn);
                     int hEnd = Integer.parseInt(answers[0]);
                     fileIn = answers[1];
-                    for (int j = 0 ; j< hEnd - hStart; j++){
+                    for (int j = 0 ; j<= hEnd - hStart; j++){
                         hours[j] = hStart + j;
                     }
                     answers = configure(fileIn);
@@ -230,15 +218,19 @@ public class FileManager implements Compiler {
                         answers = configure(fileIn);
                         fileIn = answers[1];
                         Student student = Database.getStudent(answers[0]);
-                        student.addRegisteredCourse(courses.getLast());
+                        if (student != null) {
+                            student.addRegisteredCourse(courses.getLast());
+                        }
                     }
-
+                    fileIn = fileIn.substring(3);
                 }
             }
+            Database.setCourses(courses);
         }catch (IOException e){
             System.out.println("error occurred while importing data.");
-        }catch (StringIndexOutOfBoundsException | NumberFormatException ex){
+        }catch (StringIndexOutOfBoundsException | IllegalArgumentException ex){
             System.out.println("there is no previous readable data.");
         }
+        Course.setShowMessages(true);
     }
 }

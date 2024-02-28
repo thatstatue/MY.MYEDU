@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public abstract class Course {
     private final String name;
+    public static boolean showMessages;
     private final School school;
     private final String teacher;
     private final int code;
@@ -13,6 +14,15 @@ public abstract class Course {
     private final int[] days;
     private final int[] hours;
     private final String examDate;
+
+    public static boolean isShowMessages() {
+        return showMessages;
+    }
+
+    public static void setShowMessages(boolean showMessages) {
+        Course.showMessages = showMessages;
+    }
+
     private ArrayList<Student> regStudents;
 
     public static final String[] dayNumbers = new String[]{
@@ -27,7 +37,7 @@ public abstract class Course {
             "17:30", "18:00", "18:30", "19:00",
             "19:30", "20:00", "20:30"
     };
-    public static final void showStartHours(){
+    public static void showStartHours(){
         System.out.println("\tthis is the list of time tables: \n=============");
         for (int i = 0; i<26; i++){
             System.out.print(i+1 + "- " + startHours[i] + "\t\t");
@@ -58,13 +68,12 @@ public abstract class Course {
         String s = getCode() + " - " +getName()+"\n"+"school: "+ getSchool().name() + "\tprofessor: "+ getTeacher()+
                "\t\tcapacity: "+ getCapacity() + "\tregistered: " + getRegStudents().size() + "\tunits: "+ getUnits()+
                 "\ndays: ";
-        String d = "";
+        StringBuilder d = new StringBuilder();
         for (int num: days){
-            d += dayNumbers[num] + " ";
+            d.append(dayNumbers[num]).append(" ");
         }
-        d += "{from " + startHours[getHours()[0]] +
-                " to "+ startHours[getHours()[getHours().length-1] + 1] + "}\t\t";
-        d += "exam date: "+ getExamDate()+ "\t exam time: " + startHours[getExamTime()];
+        d.append("{from ").append(startHours[getHours()[0]]).append(" to ").append(startHours[getHours()[getHours().length - 1] + 1]).append("}\t\t");
+        d.append("exam date: ").append(getExamDate()).append("\t exam time: ").append(startHours[getExamTime()]);
         return s+ d +"\n";
     }
 
@@ -128,8 +137,13 @@ public abstract class Course {
         if (!student.isInCourses(this)) {
             student.addRegisteredCourse(this);
         }
-        System.out.println("student was added to the course");
+        sout("student was added to the course");
         showRegStudents();
+    }
+    public void sout(String message){
+        if (showMessages){
+            System.out.println(message);
+        }
     }
     public boolean isInStudents (Student student){
         for (Student student1: getRegStudents()){
@@ -148,10 +162,10 @@ public abstract class Course {
         showRegStudents();
     }
     public void showRegStudents (){
-        System.out.println("registered students:");
+        sout("registered students:");
         for (Student student: regStudents){
-            System.out.println(student.getUsername());
+            sout(student.getUsername());
         }
-        System.out.println("______________\n");
+        sout("______________\n");
     }
 }

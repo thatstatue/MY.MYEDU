@@ -1,15 +1,18 @@
 import Courses.*;
 import Users.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Cli {
     public final Scanner scanner = new Scanner(System.in);
+    private File current;
     private final Logic logic;
     private final ArrayList<String> actions;
     private User thisUser;
+    private FileManager fileManager;
 
     public void initHardcode() {
         Admin admin = new Admin("Admin", "2");
@@ -83,10 +86,15 @@ public class Cli {
     public Cli(Logic logic) {
         this.logic = logic;
         actions = new ArrayList<>();
+        fileManager = new FileManager();
         initHardcode();
     }
 
     public void run() {
+        File file = new File("");
+        current = new File(file.getAbsolutePath(), "students_production.txt");
+        System.out.println(current.getAbsolutePath());
+        fileManager.importData(current);
         while (true) {
             loginPage();
         }
@@ -138,6 +146,7 @@ public class Cli {
             } else {
                 User newUser = logic.createUser(username, password);
                 logic.database.addUser(newUser);
+                fileManager.exportData(current);
                 System.out.println("your account was created! redirecting you to login page ...");
                 redirect("0");
             }
@@ -151,7 +160,6 @@ public class Cli {
     public void overview(User user) {
         addAction("overview");
         System.out.println("you are logged in!");
-        System.out.println("0- go to login page");
         if (user instanceof Admin) {
             adminOverview((Admin) user);
         } else {
@@ -312,6 +320,7 @@ public class Cli {
                     }
                     if (canAdd) {
                         student.addRegisteredCourse(courseCode);
+                        fileManager.exportData(current);
                     } else {
                         thisAction();
                     }
@@ -320,6 +329,7 @@ public class Cli {
                     for (Course course : student.getRegisteredCourses()) {
                         if (course.getCode() == code) {
                             student.removeRegisteredCourse(courseCode);
+                            fileManager.exportData(current);
                             cantRemove = false;
                             break;
                         }
@@ -338,6 +348,7 @@ public class Cli {
     }
 
     private void studentOverview(Student student) {
+        System.out.println("0- go to login page");
         System.out.println("1- show registered courses\n2- show all courses for schools");
         String input = scanner.next();
         redirect(input);

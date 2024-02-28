@@ -4,6 +4,13 @@ import Users.*;
 import java.util.ArrayList;
 
 public class Database {
+    public static void setUsers(ArrayList<User> users) {
+        Database.users = users;
+    }
+
+    public static void setCourses(ArrayList<Course> courses) {
+        Database.courses = courses;
+    }
 
     static ArrayList<User> users;
     static ArrayList<Course> courses;
@@ -23,7 +30,7 @@ public class Database {
     public static ArrayList<User> getUsers() {
         return users;
     }
-    public Student getStudent (String username){
+    public static Student getStudent (String username){
         for (User user: getUsers()){
             if (user instanceof  Student && user.getUsername().equals(username)){
                 return (Student)(user);

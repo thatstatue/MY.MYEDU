@@ -46,7 +46,7 @@ public class Student extends User {
         this.registeredCourses = registeredCourses;
     }
 
-    public void addRegisteredCourse(Course course){
+    public boolean addRegisteredCourse(Course course){
         if(Police.isValid(this, course)) {
             setBusy(course , true);
             registeredCourses.add(course);
@@ -56,9 +56,9 @@ public class Student extends User {
             if (course instanceof General){
                 genUnits += course.getUnits();
             }
-            System.out.println("course was registered successfully.");
+            return true;
         }else{
-            System.out.println("course was not registered.");
+            return false;
         }
 
     }
@@ -85,7 +85,9 @@ public class Student extends User {
 
     public boolean isInCourses (Course course) {
         for (Course course1 : getRegisteredCourses()) {
-            return true;
+            if (course.equals(course1)) {
+                return true;
+            }
         }
         return false;
     }

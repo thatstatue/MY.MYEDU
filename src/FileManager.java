@@ -71,7 +71,7 @@ public class FileManager implements Compiler {
             for (Student student : course.getRegStudents()) {
                 coursesData.append(student.getUsername()).append(",");
             }
-            coursesData.append("}\n");
+            coursesData.append("}");
         }
             Path fileName = Path.of(file.getAbsolutePath());
             try {
@@ -222,13 +222,13 @@ public class FileManager implements Compiler {
                             student.addRegisteredCourse(courses.getLast());
                         }
                     }
-                    fileIn = fileIn.substring(3);
+                    fileIn = fileIn.substring(2);
                 }
             }
             Database.setCourses(courses);
-        }catch (IOException e){
+        }catch (IOException e) {
             System.out.println("error occurred while importing data.");
-        }catch (StringIndexOutOfBoundsException | IllegalArgumentException ex){
+        } catch (StringIndexOutOfBoundsException | IllegalArgumentException ex){
             System.out.println("there is no previous readable data.");
         }
         Course.setShowMessages(true);

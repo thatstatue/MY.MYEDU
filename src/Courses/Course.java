@@ -15,15 +15,11 @@ public abstract class Course {
     private final int[] hours;
     private final String examDate;
 
-    public static boolean isShowMessages() {
-        return showMessages;
-    }
-
     public static void setShowMessages(boolean showMessages) {
         Course.showMessages = showMessages;
     }
 
-    private ArrayList<Student> regStudents;
+    private final ArrayList<Student> regStudents;
 
     public static final String[] dayNumbers = new String[]{
             "sat", "sun","mon","tue","wed","thu"
@@ -83,10 +79,6 @@ public abstract class Course {
 
     public ArrayList<Student> getRegStudents() {
         return regStudents;
-    }
-
-    public void setRegStudents(ArrayList<Student> regStudents) {
-        this.regStudents = regStudents;
     }
 
     public int getCapacity() {

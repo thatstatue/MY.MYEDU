@@ -14,21 +14,40 @@ public class Cli {
     private User thisUser;
     private School thisSchool;
     private final FileManager fileManager;
-
+//todo: not to show registered students when logged in as student and want to add a course
 
     public void initHardcode() {
         Admin admin = new Admin("Admin", "nottheAPpass");
         logic.database.addUser(admin);
         Prof AP = new Prof(School.CSMath, "Advanced Programming", "Boomari", 222890, 4, new int[]{1, 3}, new int[]{11, 12, 13, 14}, "1403/03/26", 3, new ArrayList<>(), 100);
         Prof SetTheory = new Prof(School.CSMath, "Basic Set Theory", "Ardeshir", 222500, 4, new int[]{1, 3}, new int[]{6, 7, 8, 9}, "1403/03/22", 3, new ArrayList<>(), 100);
-        General Math1 = new General(School.CSMath, "General Math 1", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6, 7, 8, 9}, "1403/03/28", 3, new ArrayList<>(), 200);
+        General Math1 = new General(School.CSMath, "General Math 1", "Qolamzadeh", 125564, 4, new int[]{0, 2}, new int[]{6, 7, 8, 9}, "1403/03/28", 3, new ArrayList<>(), 200);
+        General Math2 = new General(School.CSMath, "General Math 2", "Pournaki", 122534, 4, new int[]{0, 2}, new int[]{6, 7, 8, 9}, "1403/03/28", 3, new ArrayList<>(), 200);
         Prof Discrete = new Prof(School.CSMath, "Discrete Math", "Rezaee", 222934, 3, new int[]{0, 2}, new int[]{6, 7, 8}, "1403/03/22", 3, new ArrayList<>(), 80);
         logic.database.addCourse(AP);
         logic.database.addCourse(SetTheory);
         logic.database.addCourse(Math1);
+        logic.database.addCourse(Math2);
         logic.database.addCourse(Discrete);
-        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 322120, 4, new int[]{1, 3}, new int[]{0, 1, 2, 3}, "1403/03/26", 11, new ArrayList<>(), 100);
+        Prof LogicGate = new Prof(School.EE, "Logic Gate", "Shamsollahi", 32212, 4, new int[]{1, 3}, new int[]{0, 1, 2, 3}, "1403/03/26", 11, new ArrayList<>(), 100);
+        Prof OOP = new Prof(School.EE, "Object-Oriented Programming", "Parvizi", 26212, 4, new int[]{1, 3}, new int[]{5, 6, 7, 8}, "1403/03/23", 21, new ArrayList<>(), 40);
+        General SAS = new General(School.EE, "Signals & Systems", "Behroozi", 25742, 3, new int[]{1, 3}, new int[]{12, 13, 14}, "1403/03/26", 11, new ArrayList<>(), 80);
         logic.database.addCourse(LogicGate);
+        logic.database.addCourse(OOP);
+        logic.database.addCourse(SAS);
+        Prof comp1 = new Prof(School.CE, "Probability and Statistics", "Sharifi", 40181, 3, new int[]{0, 2}, new int[]{4, 5, 6}, "1403/03/26", 16, new ArrayList<>(), 100);
+        Prof comp2 = new Prof(School.CE, "Discrete Systems", "Zarabi Zade", 40123, 3, new int[]{1, 3}, new int[]{4, 5, 6}, "1403/03/22", 3, new ArrayList<>(), 200);
+        General comp3 = new General(School.CE, "Linear Algebra", "RabiEi", 40342, 3, new int[]{1, 3}, new int[]{14, 15, 16}, "1403/03/31", 14, new ArrayList<>(), 50);
+        logic.database.addCourse(comp1);
+        logic.database.addCourse(comp2);
+        logic.database.addCourse(comp3);
+
+        Prof chem1 = new Prof(School.Chem, "Som", "Sharifi", 79667, 3, new int[]{0, 2}, new int[]{4, 5, 6}, "1403/03/26", 16, new ArrayList<>(), 100);
+        Prof chem2 = new Prof(School.Chem, "Something Chemistry", "Zarabi Zade", 75560, 3, new int[]{1, 3}, new int[]{4, 5, 6}, "1403/03/22", 3, new ArrayList<>(), 200);
+        General chem3 = new General(School.Chem, "General Chemistry", "RabiEi", 76353, 3, new int[]{1, 3}, new int[]{14, 15, 16}, "1403/03/31", 14, new ArrayList<>(), 50);
+        logic.database.addCourse(chem1);
+        logic.database.addCourse(chem2);
+        logic.database.addCourse(chem3);
     }
 
     private void addAction(String action) {
@@ -51,10 +70,7 @@ public class Cli {
                 showAllCourses();
                 changeInCourses((Student) (thisUser));
             }
-            case "fill in info" -> {
-                fillInCourseInfo(thisSchool);
-
-            }
+            case "fill in info" -> fillInCourseInfo(thisSchool);
             case "import" -> exandimport(true);
             case "export" -> exandimport(false);
             case "view and change courses" -> {
@@ -102,10 +118,6 @@ public class Cli {
         }
     }
 
-    public User getThisUser() {
-        return thisUser;
-    }
-
     public void setThisUser(User thisUser) {
         this.thisUser = thisUser;
     }
@@ -121,28 +133,31 @@ public class Cli {
             redirect(username);
             System.out.println("provide password:");
             String password = scanner.next();
-            if (input.equals("1")) {
-                boolean exists = false;
-                for (User user : Database.getUsers()) {
-                    if (user.getUsername().equals(username) &&
-                            user.getPassword().equals(password)) {
-                        //login
-                        setThisUser(user);
-                        overview(thisUser);
-                        exists = true;
-                    }
+            boolean exists = false;
+            for (User user : Database.getUsers()) {
+                if (user.getUsername().equals(username)) {
+                    setThisUser(user);
+                    exists = true;
                 }
-                if (!exists) {
+            }
+            if (input.equals("1")) {
+                if (exists && thisUser.getPassword().equals(password)) {
+                    overview(thisUser);
+                }else {
                     System.out.println("wrong username or password!");
                     thisAction();
                 }
-
             } else {
-                User newUser = logic.createUser(username, password);
-                logic.database.addUser(newUser);
-                fileManager.exportData(current);
-                System.out.println("your account was created! redirecting you to login page ...");
-                redirect("0");
+                if (!exists){
+                    User newUser = logic.createUser(username, password);
+                    logic.database.addUser(newUser);
+                    fileManager.exportData(current);
+                    System.out.println("your account was created! redirecting you to login page ...");
+                    redirect("0");
+                }else{
+                    System.out.println("an account with this username already exists");
+                    thisAction();
+                }
             }
         } else {
             invalidInput();
@@ -188,11 +203,16 @@ public class Cli {
         redirect(absPath);
         File file = new File(absPath);
         if (file.exists()) {
+            String s;
             if (isImport) {
                 fileManager.importData(file);
+                s = "imported";
             } else {
                 fileManager.exportData(file);
+                s = "exported";
             }
+            System.out.println("data was " + s + " successfully.");
+            backAction();//?
         } else {
             System.out.println("this absolute path doesn't belong to any files.");
         }
@@ -206,8 +226,8 @@ public class Cli {
         redirect(input);
         try {
             if (input.equals("1")) {
-                fillInCourseInfo(school);
                 addAction("fill in info");
+                fillInCourseInfo(school);
             } else if (input.equals("2")) {
                 System.out.println("please provide a course code: ");
                 int code = scanner.nextInt();
@@ -378,7 +398,6 @@ public class Cli {
     }
 
     private void studentOverview(Student student) {
-        System.out.println("0- go to login page");
         System.out.println("1- show registered courses\n2- show all courses for schools");
         String input = scanner.next();
         redirect(input);
@@ -497,9 +516,9 @@ public class Cli {
             Course.showStartHours();
             System.out.println("\tplease select a time for the exam: ");
             examTime = scanner.nextInt() - 1;
-            if (examTime < 0 || examTime > 26) {
+            if (examTime < -1 || examTime > 25) {
                 invalidInput();
-            } else if (examTime == 0) {
+            } else if (examTime == -1) {
                 redirect("0");
             }
             System.out.println("thank you for providing the information!");
@@ -508,6 +527,7 @@ public class Cli {
         } catch (ArrayIndexOutOfBoundsException | NegativeArraySizeException
                  | NullPointerException | NumberFormatException ex) {
             invalidInput();
+            System.out.println("course was not created.");
         }
     }
 
@@ -554,8 +574,5 @@ public class Cli {
         return null;
     }
 
-    //todo: account qablan sakhti
-    public Logic getLogic() {
-        return logic;
-    }
+
 }

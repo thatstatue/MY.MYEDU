@@ -48,7 +48,6 @@ public class Database {
         return courses;
     }
 
-    //todo: only admins can access this
     public void showStudents() {
         System.out.println("Students: ");
         for (User user : users) {

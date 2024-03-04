@@ -51,7 +51,7 @@ public class Student extends User {
             setBusy(course , true);
             registeredCourses.add(course);
             if (!course.isInStudents(this)) {
-                course.addStudent(this);
+                course.addStudent(this, false);
             }
             if (course instanceof General){
                 genUnits += course.getUnits();
@@ -75,7 +75,7 @@ public class Student extends User {
         setBusy(course , false);
         registeredCourses.remove(course);
         if (course.isInStudents(this)) {
-            course.removeStudent(this);
+            course.removeStudent(this, false);
         }
         if (course instanceof General){
             genUnits -= course.getUnits();

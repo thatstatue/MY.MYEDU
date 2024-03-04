@@ -124,13 +124,15 @@ public abstract class Course {
     public void addCapacity (int add){
         setCapacity(getCapacity()+add);
     }
-    public void addStudent (Student student){
+    public void addStudent (Student student, boolean isAdmin){
         regStudents.add(student);
         if (!student.isInCourses(this)) {
             student.addRegisteredCourse(this);
         }
         sout("student was added to the course");
-        showRegStudents();
+        if (isAdmin) {
+            showRegStudents();
+        }
     }
     public void sout(String message){
         if (showMessages){
@@ -145,16 +147,18 @@ public abstract class Course {
         }
         return false;
     }
-    public void removeStudent (Student student){
+    public void removeStudent (Student student, boolean isAdmin){
         regStudents.remove(student);
         if (student.isInCourses(this)) {
             student.removeRegisteredCourse(this);
         }
         System.out.println("student was removed from the course");
-        showRegStudents();
+        if (isAdmin) {
+            showRegStudents();
+        }
     }
     public void showRegStudents (){
-        sout("registered students:");
+        sout("______________\nregistered students:");
         for (Student student: regStudents){
             sout(student.getUsername());
         }

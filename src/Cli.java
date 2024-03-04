@@ -275,7 +275,7 @@ public class Cli {
                                 }
                             }
                             if (exist) {
-                                courseCode.removeStudent(removingStudent);
+                                courseCode.removeStudent(removingStudent , true);
                                 System.out.println("the provided student is no longer registered in this course.");
                             } else {
                                 System.out.println("the provided student did not have this course.");
@@ -296,7 +296,7 @@ public class Cli {
                             }
                             if (!exist) {
                                 if (Police.isValid(addingStudent, courseCode)) {
-                                    courseCode.addStudent(addingStudent);
+                                    courseCode.addStudent(addingStudent, true);
                                     System.out.println("the provided student is now registered in this course.");
                                 } else {
                                     System.out.println("was not able to add the student.");

@@ -14,7 +14,6 @@ public class Cli {
     private User thisUser;
     private School thisSchool;
     private final FileManager fileManager;
-//todo: not to show registered students when logged in as student and want to add a course
 
     public void initHardcode() {
         Admin admin = new Admin("Admin", "nottheAPpass");
